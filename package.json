@@ -1,3 +1,5 @@
+"homepage": "https://Rajat-0707.github.io/oddEvenGamme2"
+
 {
   "name": "counter",
   "version": "0.1.0",
@@ -17,6 +19,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+   
+}
+
   },
   "eslintConfig": {
     "extends": [
