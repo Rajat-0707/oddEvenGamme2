@@ -2,93 +2,118 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [selectedSide, setSelectedSide] = useState(""); 
-  const [num, setNum] = useState(0);     
-  const [inum, setInum] = useState(0);    
+  const [selectedSide, setSelectedSide] = useState('');
+  const [userNumber, setUserNumber] = useState(0);
+  const [computerNumber, setComputerNumber] = useState(0);
+  const [gameResult, setGameResult] = useState(null); // Track game result
 
-  function m() {
+  const generateComputerNumber = () => {
+    return Math.floor(Math.random() * 5) + 1;
+  };
+
+  const determineWinner = (userNumber, computerNumber, selectedSide) => {
+    const total = userNumber + computerNumber;
+    const isEven = total % 2 === 0;
+
+    if ((selectedSide === 'odd' && isEven) || (selectedSide === 'even' && !isEven)) {
+      return "lose";
+    } else {
+      return "win";
+    }
+  };
+
+  const handlePlay = () => {
     if (!selectedSide) {
       alert("Please select 'Odd' or 'Even' before playing!");
       return;
     }
-    if (inum === 0) {
+    if (userNumber === 0) {
       alert("Please select your number before playing!");
       return;
     }
 
-    const rand = Math.floor(Math.random() * 5) + 1;
-    setNum(rand);
+    const rand = generateComputerNumber();
+    setComputerNumber(rand);
 
-    const total = rand + inum;
-    const isEven = total % 2 === 0;
+    const result = determineWinner(userNumber, rand, selectedSide);
+    setGameResult(result); // Update the game result state.
+    alert(`You ${result}!`);
+  };
 
-    if ((selectedSide === "odd" && isEven) || (selectedSide === "even" && !isEven)) {
-      alert("You lose");
-    } else {
-      alert("You win!");
-    }
-  }
+  const handleSideChange = (e) => {
+    setSelectedSide(e.target.value);
+    setGameResult(null);  // Reset result when side changes
+  };
+
+  const handleNumberChange = (e) => {
+    setUserNumber(parseInt(e.target.value, 10));
+    setGameResult(null); // Reset result when number changes
+  };
 
   return (
     <>
-      <div className="head">
-        <p className='p1'>SELECT YOUR SIDE:</p>
+      <div className="side-selection">
+        <p className='side-selection__title'>SELECT YOUR SIDE:</p>
         <br />
-        <input
-          type="radio"
-          name="side"
-          id="odd"
-          value="odd"
-          onChange={(e) => setSelectedSide(e.target.value)}
-        />
-        <label htmlFor="odd">Odd</label>
+        <label>
+          <input
+            type="radio"
+            name="side"
+            value="odd"
+            checked={selectedSide === "odd"} //Controlled component: makes checked state depend on react state
+            onChange={handleSideChange}
+          />
+          Odd
+        </label>
 
-        <input
-          type="radio"
-          name="side"
-          id="even"
-          value="even"
-          onChange={(e) => setSelectedSide(e.target.value)}
-        />
-        <label htmlFor="even">Even</label>
+        <label>
+          <input
+            type="radio"
+            name="side"
+            value="even"
+            checked={selectedSide === "even"} //Controlled component: makes checked state depend on react state
+            onChange={handleSideChange}
+          />
+          Even
+        </label>
       </div>
 
       <hr />
 
-      <div className="container">
-        <div className="box1">
-          <div className="box11">{inum}</div>
-          <div className="p"><p>YOU</p></div>
+      <div className="game-container">
+        <div className="player-box">
+          <div className="player-box__number">{userNumber}</div>
+          <p>YOU</p>
         </div>
 
-        <div className="box2">
-          <div className="box21">{num}</div>
-          <div className="p"><p>COMPUTER</p></div>
+        <div className="computer-box">
+          <div className="computer-box__number">{computerNumber}</div>
+          <p>COMPUTER</p>
         </div>
       </div>
 
-      <div className="foot">
-        <div className="foot1"><p>SELECT YOUR NUMBER</p></div>
+      <div className="number-selection">
+        <p className="number-selection__title">SELECT YOUR NUMBER</p>
 
-        <div className="foot2">
+        <div className="number-selection__options">
           {[1, 2, 3, 4, 5].map(n => (
-            <span key={n}>
+            <label key={n}>
               <input
                 type="radio"
                 name="userNumber"
-                id={`num${n}`}
                 value={n}
-                onChange={(e) => setInum(parseInt(e.target.value))}
+                checked={userNumber === n}
+                onChange={handleNumberChange}
               />
-              <label htmlFor={`num${n}`}>{n}</label>
-            </span>
+              {n}
+            </label>
           ))}
           <br />
         </div>
 
-        <div className="buu">
-          <button className="bu" onClick={m}>PLAY</button>
-        </div>
+        <button className="play-button" onClick={handlePlay} disabled={!selectedSide || userNumber === 0}>
+          PLAY
+        </button>
       </div>
     </>
   );
